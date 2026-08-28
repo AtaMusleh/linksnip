@@ -12,7 +12,8 @@ import {
 } from '@/lib/api';
 import { getOwnerKey, peekOwnerKey } from '@/lib/owner';
 import { prisma } from '@/lib/prisma';
-import { generateUniqueSlug, isReservedSlug, SlugGenerationError } from '@/lib/slug';
+import { isReservedSlug } from '@/lib/slug';
+import { generateUniqueSlug, SlugGenerationError } from '@/lib/slug-server';
 import { createLinkSchema } from '@/lib/validation';
 
 const RATE_LIMIT_MAX = 10;

@@ -1,7 +1,5 @@
 import { customAlphabet } from 'nanoid';
 
-import { prisma } from './prisma';
-
 export const SLUG_LENGTH = 7;
 
 /**
@@ -39,36 +37,3 @@ export function isReservedSlug(slug: string): boolean {
 }
 
 export const MAX_SLUG_ATTEMPTS = 5;
-
-export class SlugGenerationError extends Error {
-  constructor(attempts: number) {
-    super(`Could not generate an unused slug after ${attempts} attempts`);
-    this.name = 'SlugGenerationError';
-  }
-}
-
-/**
- * Generates a slug that is not already stored. The unique index on `slug` is
- * the real guarantee — this check just avoids surfacing a constraint violation
- * on the common path, so callers should still handle a write conflict.
- */
-export async function generateUniqueSlug(): Promise<string> {
-  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt += 1) {
-    const slug = generateSlug();
-
-    if (isReservedSlug(slug)) {
-      continue;
-    }
-
-    const existing = await prisma.link.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-
-    if (existing === null) {
-      return slug;
-    }
-  }
-
-  throw new SlugGenerationError(MAX_SLUG_ATTEMPTS);
-}
